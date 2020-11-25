@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/bg_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+
+        >
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_galley"
+            android:layout_width="135dp"
+            android:layout_height="125dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/img_galley_border"
+            android:layout_width="130dp"
+            android:layout_height="125dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            />
+        <!--        android:src="@drawable/rectangle_border"-->
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/circle_img"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="right"
+            android:layout_margin="15dp"
+            android:src="@drawable/circle_blue"
+            />
+        <!--        android:src="@drawable/circle_blue"-->
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/camera_image"
+        android:layout_width="130dp"
+        android:layout_height="125dp"
+        android:visibility="gone"
+        android:layout_margin="2dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.05"
+            android:src="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="Camera"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+
+</LinearLayout>

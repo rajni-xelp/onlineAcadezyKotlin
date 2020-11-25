@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.onlineacadezykotlin.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_whiteBoardFragment"
+            app:destination="@id/whiteBoardFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/whiteBoardFragment"
+        android:name="com.example.onlineacadezykotlin.WhiteBoardFragment"
+        android:label="fragment_white_board"
+        tools:layout="@layout/fragment_white_board" >
+        <action
+            android:id="@+id/action_whiteBoardFragment_to_phoneGalleryFragment"
+            app:destination="@id/phoneGalleryFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneGalleryFragment"
+        android:name="com.example.onlineacadezykotlin.PhoneGalleryFragment"
+        android:label="PhoneGalleryFragment" >
+    </fragment>
+</navigation>
