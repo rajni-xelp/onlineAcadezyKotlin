@@ -5,5 +5,6 @@ class StaticClass {
     {
       var draw:Boolean=false
         var matchParentHeight:Int=0
+        var selectedListOfImages=ArrayList<String>();
     }
 }

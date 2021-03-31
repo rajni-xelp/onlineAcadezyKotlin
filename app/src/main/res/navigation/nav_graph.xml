@@ -25,8 +25,8 @@
         android:label="fragment_white_board"
         tools:layout="@layout/fragment_white_board" >
         <action
-            android:id="@+id/action_whiteBoardFragment_to_phoneGalleryFragment"
-            app:destination="@id/phoneGalleryFragment"
+            android:id="@+id/action_whiteBoardFragment_to_folderFragment"
+            app:destination="@id/folderFragment"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:enterAnim="@anim/slide_in_right"
@@ -38,4 +38,22 @@
         android:name="com.example.onlineacadezykotlin.PhoneGalleryFragment"
         android:label="PhoneGalleryFragment" >
     </fragment>
+    <fragment
+        android:id="@+id/folderFragment"
+        android:name="com.example.onlineacadezykotlin.FolderFragment"
+        android:label="fragment_folder"
+        tools:layout="@layout/fragment_folder" >
+        <action
+            android:id="@+id/action_folderFragment_to_phoneGalleryFragment"
+            app:destination="@id/phoneGalleryFragment" />
+    </fragment>
 </navigation>
+
+<!--<action-->
+<!--android:id="@+id/action_whiteBoardFragment_to_phoneGalleryFragment"-->
+<!--app:destination="@id/phoneGalleryFragment"-->
+<!--app:popEnterAnim="@anim/slide_in_left"-->
+<!--app:popExitAnim="@anim/slide_out_right"-->
+<!--app:enterAnim="@anim/slide_in_right"-->
+<!--app:exitAnim="@anim/slide_out_left"-->
+<!--    />-->

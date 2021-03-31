@@ -1,7 +1,6 @@
 package com.example.onlineacadezykotlin
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.onlineacadezykotlin.databinding.PhoneGalleryAdapterBinding
 import java.util.ArrayList
 
 class PhoneGalleryAdapter(val context :Context, phoneGalleryFragment: PhoneGalleryFragment,val imagesGallery : ArrayList<GalleryModel>) : RecyclerView.Adapter<PhoneGalleryAdapter.Myhandler>() {
@@ -22,9 +21,8 @@ class PhoneGalleryAdapter(val context :Context, phoneGalleryFragment: PhoneGalle
         showGalleryNextButtonInterface = phoneGalleryFragment
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Myhandler {
-        val view=LayoutInflater.from(context).inflate(R.layout.phone_gallery_adapter,parent,false)
-        val myHandler=Myhandler(view)
-        return myHandler
+        val phoneGalleryAdapterBinding=PhoneGalleryAdapterBinding.inflate(LayoutInflater.from(context),parent,false)
+        return Myhandler(phoneGalleryAdapterBinding)
     }
 
     override fun getItemCount(): Int {
@@ -32,23 +30,18 @@ class PhoneGalleryAdapter(val context :Context, phoneGalleryFragment: PhoneGalle
     }
     override fun onBindViewHolder(holder: Myhandler, position: Int) {
 
-        holder.camera_image.visibility=View.GONE
+        holder.bind(imagesGallery.get(position))
         holder.bg_img.visibility=View.VISIBLE
-        Log.d("xskxkjsakcj",position.toString()+"  , "+imagesGallery.get(position).getImage())
-        Glide.with(context).load(imagesGallery.get(position).getImage()).into(holder.img_galley)
 
         holder.bg_img.isSelected=false
         holder.circle_img.visibility=View.GONE
-        holder.img_galley_border.visibility=View.GONE
 
-        if(imagesGallery.get(position).isSelected())
+        if(imagesGallery.get(position).isSelected)
         {
-            holder.img_galley_border.visibility=View.VISIBLE
             holder.circle_img.visibility=View.VISIBLE
         }
         else
         {
-            holder.img_galley_border.visibility=View.GONE
             holder.circle_img.visibility=View.GONE
         }
 
@@ -57,7 +50,6 @@ class PhoneGalleryAdapter(val context :Context, phoneGalleryFragment: PhoneGalle
             if(imagesGallery.get(position).isSelected)
             {
                 imagesGallery.get(position).isSelected=false
-                holder.img_galley_border.visibility=View.GONE
                 holder.circle_img.visibility=View.GONE
                 maxNoOfImages--
                 counter--
@@ -65,43 +57,47 @@ class PhoneGalleryAdapter(val context :Context, phoneGalleryFragment: PhoneGalle
             }
             else
             {
-                if(maxNoOfImages<1)
+                if(maxNoOfImages<3)
                 {
                     imagesGallery.get(position).isSelected=true
-                    holder.img_galley_border.visibility=View.VISIBLE
                     holder.circle_img.visibility=View.VISIBLE
                     counter++
                     maxNoOfImages++
-                    galleryImagesList.add(imagesGallery.get(position).image)
+                    imagesGallery.get(position).image?.let { it1 -> galleryImagesList.add(it1) }
                 }
                 else
                 {
-                    Toast.makeText(context,"You can only select 1 image",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,"You can only select 3 images at once",Toast.LENGTH_SHORT).show()
                 }
             }
-            if(galleryImagesList.isNotEmpty())
-            {
-                showGalleryNextButtonInterface?.showGalleryNextButton(maxNoOfImages,galleryImagesList.get(0))
-            }
-            else
-            {
-                showGalleryNextButtonInterface?.showGalleryNextButton(maxNoOfImages,"")
-            }
+            showGalleryNextButtonInterface?.showGalleryNextButton(maxNoOfImages,galleryImagesList)
+//            if(galleryImagesList.isNotEmpty())
+//            {
+//                showGalleryNextButtonInterface?.showGalleryNextButton(maxNoOfImages,galleryImagesList)
+//            }
+//            else
+//            {
+//                showGalleryNextButtonInterface?.showGalleryNextButton(maxNoOfImages,galleryImagesList)
+//            }
         }
     }
 
-    class Myhandler(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class Myhandler(val binding: PhoneGalleryAdapterBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        val img_galley=itemView.findViewById<AppCompatImageView>(R.id.img_galley)
-        val img_galley_border=itemView.findViewById<AppCompatImageView>(R.id.img_galley_border)
-        val circle_img=itemView.findViewById<AppCompatImageView>(R.id.circle_img)
-        val bg_img=itemView.findViewById<FrameLayout>(R.id.bg_img)
-        val camera_image=itemView.findViewById<FrameLayout>(R.id.camera_image)
+        val circle_img=binding.root.findViewById<AppCompatImageView>(R.id.circle_img)
+        val bg_img=binding.root.findViewById<FrameLayout>(R.id.bg_img)
+
+        fun bind(galleryModel: GalleryModel)
+        {
+            binding.galleryModel=galleryModel
+            binding.setVariable(BR.gallery_model,galleryModel)
+            binding.executePendingBindings()
+        }
     }
 
    interface ShowGalleryNextButtonInterface
    {
-      fun showGalleryNextButton( gallerySelectedContentSize:Int, galleryImage:String)
+      fun showGalleryNextButton( gallerySelectedContentSize:Int, galleryImageList:List<String>)
    }
 
 }

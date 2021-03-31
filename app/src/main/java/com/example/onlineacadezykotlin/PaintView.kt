@@ -3,11 +3,9 @@ package com.example.onlineacadezykotlin
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import androidx.core.view.marginTop
 
 class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     lateinit var mScaleDetector: ScaleGestureDetector
@@ -76,18 +74,15 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     fun putImage(imageDataModelList:List<ImageDataModel>,image:Bitmap)
     {
-        var uploadedImageDetails:UploadedImageDetails= UploadedImageDetails();
-        var resizedBitmap:Bitmap=getResizedBitmap(image,width.toFloat(),StaticClass.matchParentHeight.toFloat())
+        val uploadedImageDetails:UploadedImageDetails= UploadedImageDetails();
+        val resizedBitmap:Bitmap=getResizedBitmap(image,width.toFloat(),StaticClass.matchParentHeight.toFloat())
         uploadedImageDetails.setBitmap(resizedBitmap)
         bitmapList.add(uploadedImageDetails)
         if(bitmapList.size>1)
             marginFromTop=marginFromTop + bitmapList.get(bitmapList.size-2).getBitmap().height+50
            uploadedImageDetails.setHeightFromTop(marginFromTop)
             invalidate()
-
     }
-
-
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)

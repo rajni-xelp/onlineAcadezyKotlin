@@ -12,17 +12,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.example.onlineacadezykotlin.databinding.FragmentWhiteBoardBinding
+import com.example.onlineacadezykotlin.viewmodel.WhiteBoardViewModel
 import java.io.File
 import java.io.FileOutputStream
 
@@ -31,95 +30,97 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
 
     lateinit var recyclerViewList: ArrayList<RecyclerView>
     lateinit var linearLayoutManagerList: ArrayList<CustomLayoutmanager>
-    var rl_whiteboard: RelativeLayout? = null
     var currentCanvas = 0
     lateinit var canvasViewList: ArrayList<ModelCanvas>
     var a: Int = 0
-    lateinit var tv_write: TextView
-    lateinit var tv_scroll: TextView
-    lateinit var tv_prev: TextView
-    lateinit var tv_next: TextView
-    lateinit var tv_clear:TextView
-    lateinit var tv_newWhiteBoard:TextView
-    lateinit var galleryImage: String
+    var galleryImageList=ArrayList<String>();
     lateinit var bmp: Bitmap
-    lateinit var tv_upload:TextView
-    lateinit var recyclerView:RecyclerView
-    lateinit var linearLayoutManager:CustomLayoutmanager
-    lateinit var paintViewAdapter:PaintViewAdapter
-    lateinit var imageDataModelList:ArrayList<ImageDataModel>
-    lateinit var  modelCanvas:ModelCanvas
-    lateinit var rl_pencil:RelativeLayout
+    lateinit var recyclerView: RecyclerView
+    lateinit var linearLayoutManager: CustomLayoutmanager
+    lateinit var paintViewAdapter: PaintViewAdapter
+    lateinit var imageDataModelList: ArrayList<ImageDataModel>
+    lateinit var modelCanvas: ModelCanvas
     var noOfCount = 1
     lateinit var navController: NavController
+    private var fragmentWhiteBoardBinding: FragmentWhiteBoardBinding? = null
+    private val binding get() = fragmentWhiteBoardBinding!!
+    lateinit var  viewModel:WhiteBoardViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         recyclerView = RecyclerView(requireActivity())
         linearLayoutManager = CustomLayoutmanager(requireActivity())
-         paintViewAdapter = PaintViewAdapter(requireContext(),this)
-         imageDataModelList = ArrayList<ImageDataModel>()
-         canvasViewList = ArrayList()
-         recyclerViewList = ArrayList()
-         linearLayoutManagerList=ArrayList()
-         modelCanvas = ModelCanvas()
+        paintViewAdapter = PaintViewAdapter(requireContext(), this)
+        imageDataModelList = ArrayList<ImageDataModel>()
+        canvasViewList = ArrayList()
+        recyclerViewList = ArrayList()
+        linearLayoutManagerList = ArrayList()
+        modelCanvas = ModelCanvas()
 
         recyclerViewList.add(recyclerView)
         linearLayoutManagerList.add(linearLayoutManager)
         modelCanvas.imageDataModelList = imageDataModelList
         canvasViewList.add(modelCanvas)
+        viewModel=ViewModelProvider(this).get(WhiteBoardViewModel::class.java)
+        viewModel.setCurrentUser()
         checkPerMission()
     }
 
-     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_white_board, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        fragmentWhiteBoardBinding = FragmentWhiteBoardBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rl_whiteboard = view.findViewById(R.id.rl_whiteboard)
-//        tv_write = view.findViewById(R.id.tv_write)
-//        tv_scroll = view.findViewById(R.id.tv_scroll)
-        tv_upload=view.findViewById(R.id.tv_upload)
-        tv_clear=view.findViewById(R.id.tv_clear)
-        tv_prev=view.findViewById(R.id.tv_prev)
-        tv_next=view.findViewById(R.id.tv_next)
-        rl_pencil=view.findViewById(R.id.rl_pencil)
 
-        tv_newWhiteBoard=view.findViewById(R.id.tv_newWhiteBoard)
+        viewModel.student_id_livedat.observe(viewLifecycleOwner, Observer {
+            Log.d("dcdjvnjdf",it)
+        })
+        binding.rlPencil.setOnClickListener(this)
+        binding.tvUpload.setOnClickListener(this)
+        binding.tvClear.setOnClickListener(this)
+        binding.tvNewWhiteBoard.setOnClickListener(this)
+        binding.tvPrev.setOnClickListener(this)
+        binding.tvNext.setOnClickListener(this)
 
-        rl_pencil.setOnClickListener(this)
-//        tv_write.setOnClickListener(this)
-//        tv_scroll.setOnClickListener(this)
-        tv_upload.setOnClickListener(this)
-        tv_clear.setOnClickListener(this)
-        tv_newWhiteBoard.setOnClickListener(this)
-        tv_prev.setOnClickListener(this)
-        tv_next.setOnClickListener(this)
-
-        navController= Navigation.findNavController(view)
+        navController = Navigation.findNavController(view)
 
 
-            if(recyclerViewList.get(currentCanvas).getParent() !=null)
-            (recyclerViewList.get(currentCanvas).getParent() as ViewGroup).removeView(recyclerViewList.get(currentCanvas))
+        if (recyclerViewList.get(currentCanvas).getParent() != null)
+            (recyclerViewList.get(currentCanvas).getParent() as ViewGroup).removeView(
+                recyclerViewList.get(currentCanvas)
+            )
 
-            if(recyclerView.layoutManager==null)
+        if (recyclerView.layoutManager == null)
             recyclerView.layoutManager = linearLayoutManager
 
-            if(recyclerView.adapter==null)
+        if (recyclerView.adapter == null)
             recyclerView.adapter = paintViewAdapter
 
-             rl_whiteboard?.addView(recyclerViewList.get(currentCanvas))
+        binding.rlWhiteboard?.addView(recyclerViewList.get(currentCanvas))
+
         setPrevAndNextVisibilty()
 
-        val liveData: MutableLiveData<String> = navController.currentBackStackEntry?.getSavedStateHandle()?.getLiveData<String>("key") as MutableLiveData<String>
+        val liveData: MutableLiveData<String> =
+            navController.currentBackStackEntry?.getSavedStateHandle()
+                ?.getLiveData<String>("key") as MutableLiveData<String>
         liveData.observe(viewLifecycleOwner, object : Observer<String?> {
             override fun onChanged(s: String?) {
                 // Do something with the result.
                 if (s != null) {
-                    galleryImage=s
+                    galleryImageList.clear()
+                    galleryImageList.addAll(StaticClass.selectedListOfImages)
+                    Log.d("dsdshfsud","code run")
                 }
-                getLocalBitmapUri()
+                StaticClass.selectedListOfImages.clear()
+                galleryImageList.forEach {
+                    getLocalBitmapUri(it)
+                }
+
+              // loadImageOncanvas()
             }
         })
 
@@ -159,59 +160,47 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.rl_pencil -> {
-//                tv_write.alpha = 1f
-//                tv_scroll.alpha = 0.5f
-                if(StaticClass.draw)
-                {
+                if (StaticClass.draw) {
                     StaticClass.draw = false
                     linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
-                    rl_pencil.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.light_grey))
-                }
-                else
-                {
+                    binding.rlPencil.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.light_grey))
+                } else {
                     StaticClass.draw = true
                     linearLayoutManagerList.get(currentCanvas).isScrollEnabled = false
-                    rl_pencil.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+                    binding.rlPencil.backgroundTintList =
+                        ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
                 }
             }
 
-//            R.id.tv_scroll -> {
-//                tv_write.alpha = 0.5f
-//                tv_scroll.alpha = 1f
-//                StaticClass.draw = false
-//                linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
-//            }
-
             R.id.tv_upload -> {
-                navController.navigate(R.id.action_whiteBoardFragment_to_phoneGalleryFragment)
+                navController.navigate(R.id.action_whiteBoardFragment_to_folderFragment)
             }
 
             R.id.tv_newWhiteBoard -> {
 
                 a = 0
-//                tv_write.alpha = 0.5f
-//                tv_scroll.alpha = 1f
-//                tv_scroll.visibility = View.GONE
                 StaticClass.draw = false
-                rl_pencil.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.light_grey))
+                binding.rlPencil.backgroundTintList =
+                    ColorStateList.valueOf(resources.getColor(R.color.light_grey))
                 val imageDataModelList = ArrayList<ImageDataModel>()
                 val modelCanvas = ModelCanvas()
                 modelCanvas.imageDataModelList = imageDataModelList
                 modelCanvas.paintView = paintView
                 canvasViewList.add(modelCanvas)
-                tv_prev.visibility = View.VISIBLE
-                tv_next.visibility = View.INVISIBLE
+                binding.tvPrev.visibility = View.VISIBLE
+                binding.tvNext.visibility = View.INVISIBLE
                 val linearLayoutManager = CustomLayoutmanager(requireActivity())
-                val paintViewAdapter = PaintViewAdapter(requireActivity(),this)
+                val paintViewAdapter = PaintViewAdapter(requireActivity(), this)
                 val recyclerView = RecyclerView(requireActivity())
                 recyclerView.adapter = paintViewAdapter
                 recyclerView.layoutManager = linearLayoutManager
                 recyclerViewList.add(recyclerView)
                 linearLayoutManagerList.add(linearLayoutManager)
 
-                rl_whiteboard?.removeAllViews()
-                rl_whiteboard?.addView(recyclerView)
-                currentCanvas=recyclerViewList.size-1
+                binding.rlWhiteboard?.removeAllViews()
+                binding.rlWhiteboard?.addView(recyclerView)
+                currentCanvas = recyclerViewList.size - 1
 
 
             }
@@ -222,27 +211,24 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
 
             R.id.tv_prev -> {
                 currentCanvas--
-//                tv_scroll.alpha = 1f
-//                tv_write.alpha = 0.5f
                 linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
                 StaticClass.draw = false
-                rl_pencil.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.light_grey))
-                rl_whiteboard?.removeAllViews()
-                rl_whiteboard?.addView(recyclerViewList.get(currentCanvas))
+                binding.rlPencil.backgroundTintList =
+                    ColorStateList.valueOf(resources.getColor(R.color.light_grey))
+                binding.rlWhiteboard?.removeAllViews()
+                binding.rlWhiteboard?.addView(recyclerViewList.get(currentCanvas))
 
                 setPrevAndNextVisibilty()
             }
 
             R.id.tv_next -> {
                 currentCanvas++
-
-//                tv_scroll.alpha = 1f
-//                tv_write.alpha = 0.5f
                 linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
                 StaticClass.draw = false
-                rl_pencil.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.light_grey))
-                rl_whiteboard?.removeAllViews()
-                rl_whiteboard?.addView(recyclerViewList.get(currentCanvas))
+                binding.rlPencil.backgroundTintList =
+                    ColorStateList.valueOf(resources.getColor(R.color.light_grey))
+                binding.rlWhiteboard?.removeAllViews()
+                binding.rlWhiteboard?.addView(recyclerViewList.get(currentCanvas))
 
                 setPrevAndNextVisibilty()
 
@@ -250,10 +236,14 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
         }
     }
 
-    fun getLocalBitmapUri() {
+    fun getLocalBitmapUri(galleryImage:String) {
         val filenew = File(galleryImage)
         val reSizedImageFile: File = ReduceFileSize.reduce(filenew);
-        val mUri: Uri = FileProvider.getUriForFile(requireActivity(), "com.example.onlineacadezy.fileprovider", reSizedImageFile)
+        val mUri: Uri = FileProvider.getUriForFile(
+            requireActivity(),
+            "com.example.onlineacadezy.fileprovider",
+            reSizedImageFile
+        )
 
         try {
             bmp = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), mUri);
@@ -263,37 +253,36 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
             )
             val out = FileOutputStream(file)
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
+            out.close()
         } catch (e: Exception) {
         }
-        val imageDataModel: ImageDataModel = ImageDataModel();
+        val imageDataModel = ImageDataModel()
         imageDataModel.bitmap = bmp
         canvasViewList.get(currentCanvas).getImageDataModelList().add(imageDataModel)
+
+//    }
+//    fun loadImageOncanvas()
+//    {
         if (canvasViewList.get(currentCanvas).getImageDataModelList().size > 1) {
             noOfCount = 1 + noOfCount;
-            setHeight(bmp.getHeight());
+            setHeight(galleryImageList.size*bmp.getHeight());
         } else {
-            StaticClass.matchParentHeight = paintView.getHeight();
+            StaticClass.matchParentHeight = paintView.getHeight()
         }
-//        tv_write.setAlpha(0.5f);
-//        tv_scroll.setAlpha(1f);
         StaticClass.draw = false;
         linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
-//        if (!canvasViewList.get(currentCanvas).getImageDataModelList()
-//                .isEmpty() && canvasViewList.get(currentCanvas).getImageDataModelList().size > 1
-//        ) {
-//            tv_scroll.setVisibility(View.VISIBLE);
-//        }
-        if(canvasViewList.get(currentCanvas).paintView !=null)
-        canvasViewList.get(currentCanvas).paintView.putImage(canvasViewList.get(currentCanvas).getImageDataModelList(), bmp)
-
+        if (canvasViewList.get(currentCanvas).paintView != null)
+            canvasViewList.get(currentCanvas).paintView.putImage(
+                canvasViewList.get(currentCanvas).getImageDataModelList(), bmp
+            )
     }
 
     fun setHeight(height: Int) {
         val layoutParams: ViewGroup.LayoutParams =
             canvasViewList.get(currentCanvas).getPaintView().getLayoutParams()
         layoutParams.height = canvasViewList.get(currentCanvas).getPaintView()
-            .getHeight() + StaticClass.matchParentHeight
+            .getHeight() + galleryImageList.size*StaticClass.matchParentHeight
+        Log.d("dsfcsgfadf","number of times")
         canvasViewList.get(currentCanvas).getPaintView().setLayoutParams(layoutParams)
     }
 
@@ -303,23 +292,23 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
         canvasViewList.get(currentCanvas).setPaintView(paintView);
     }
 
-    fun setPrevAndNextVisibilty()
-    {
-//        if (canvasViewList.get(currentCanvas).imageDataModelList.isEmpty() && canvasViewList.get(currentCanvas).imageDataModelList.size > 1) {
-//            tv_scroll.setVisibility(View.VISIBLE)
-//        } else {
-//            tv_scroll.setVisibility(View.GONE)
-//        }
+    fun setPrevAndNextVisibilty() {
 
         if (canvasViewList.size > 1 && currentCanvas >= 1) {
-            tv_prev.visibility = View.VISIBLE
+            binding.tvPrev.visibility = View.VISIBLE
         } else {
-            tv_prev.visibility = View.INVISIBLE
+            binding.tvPrev.visibility = View.INVISIBLE
         }
         if (canvasViewList.size > 1 && currentCanvas < (canvasViewList.size - 1)) {
-            tv_next.visibility = View.VISIBLE
+            binding.tvNext.visibility = View.VISIBLE
         } else {
-            tv_next.visibility = View.INVISIBLE
+            binding.tvNext.visibility = View.INVISIBLE
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        fragmentWhiteBoardBinding = null
+    }
+
 }
