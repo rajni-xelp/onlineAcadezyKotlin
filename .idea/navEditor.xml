@@ -8,14 +8,35 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="chooseImageToZoom">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="389" />
+                            <option name="y" value="-483" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
                   <entry key="folderFragment">
                     <value>
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="320" />
-                            <option name="y" value="-177" />
+                            <option name="x" value="285" />
+                            <option name="y" value="15" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_folderFragment_to_phoneGalleryFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -25,8 +46,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-281" />
-                            <option name="y" value="-80" />
+                            <option name="x" value="-320" />
+                            <option name="y" value="23" />
                           </Point>
                         </option>
                         <option name="myPositions">
@@ -46,8 +67,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="584" />
-                            <option name="y" value="-26" />
+                            <option name="x" value="576" />
+                            <option name="y" value="20" />
                           </Point>
                         </option>
                       </LayoutPositions>
@@ -58,8 +79,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="60" />
-                            <option name="y" value="-135" />
+                            <option name="x" value="-29" />
+                            <option name="y" value="-69" />
                           </Point>
                         </option>
                         <option name="myPositions">
@@ -70,6 +91,18 @@
                               </value>
                             </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="zoomImageListFragment">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="63" />
+                            <option name="y" value="-468" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>

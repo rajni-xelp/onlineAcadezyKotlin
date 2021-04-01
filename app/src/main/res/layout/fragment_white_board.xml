@@ -41,7 +41,6 @@
         android:background="@color/ultra_light_gray"
         android:layout_below="@+id/tv_next"
         />
-
     <RelativeLayout
         android:id="@+id/rl_whiteboard"
         android:layout_width="match_parent"
@@ -79,29 +78,6 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true">
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_write"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Draw"-->
-<!--            android:alpha=".5"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="15sp"-->
-<!--            android:textStyle="bold" />-->
-<!--        <TextView-->
-<!--            android:id="@+id/tv_scroll"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:text="Scroll"-->
-<!--            android:visibility="gone"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="15sp"-->
-<!--            android:textStyle="bold" />-->
-
         <TextView
             android:id="@+id/tv_newWhiteBoard"
             android:layout_height="match_parent"
@@ -131,6 +107,16 @@
             android:gravity="center"
             android:layout_height="match_parent"
             android:text="Clear"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_zoom"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="Zoom"
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold" />

@@ -32,6 +32,9 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             />
+                <action
+            android:id="@+id/action_whiteBoardFragment_to_zoomImageListFragment"
+            app:destination="@id/zoomImageListFragment" />
     </fragment>
     <fragment
         android:id="@+id/phoneGalleryFragment"
@@ -46,6 +49,20 @@
         <action
             android:id="@+id/action_folderFragment_to_phoneGalleryFragment"
             app:destination="@id/phoneGalleryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseImageToZoom"
+        android:name="com.example.onlineacadezykotlin.ChooseImageToZoom"
+        android:label="fragment_choose_image_to_zoom"
+        tools:layout="@layout/fragment_choose_image_to_zoom" />
+    <fragment
+        android:id="@+id/zoomImageListFragment"
+        android:name="com.example.onlineacadezykotlin.ZoomImageListFragment"
+        android:label="fragment_zoom_image_list"
+        tools:layout="@layout/fragment_zoom_image_list" >
+        <action
+            android:id="@+id/action_zoomImageListFragment_to_chooseImageToZoom"
+            app:destination="@id/chooseImageToZoom" />
     </fragment>
 </navigation>
 

@@ -50,7 +50,7 @@ class PhoneGalleryFragment : Fragment(), PhoneGalleryAdapter.ShowGalleryNextButt
         navController = Navigation.findNavController(view)
         binding.recyclerView.setHasFixedSize(true)
         val gridLayoutManager = GridLayoutManager(requireActivity(), 3);
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL); // set Horizontal Orientation
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL) // set Horizontal Orientation
         binding.recyclerView.setLayoutManager(gridLayoutManager)
         getGalleryData()
 

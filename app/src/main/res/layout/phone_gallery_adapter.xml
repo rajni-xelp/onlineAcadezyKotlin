@@ -26,7 +26,6 @@
             android:scaleType="centerCrop"
             app:imageUrl="@{gallery_model.image}"
             />
-<!--        app:error="@{@drawable/venueError}"-->
 
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -40,39 +39,6 @@
 
 
     </FrameLayout>
-
-<!--    <FrameLayout-->
-<!--        android:id="@+id/camera_image"-->
-<!--        android:layout_width="130dp"-->
-<!--        android:layout_height="125dp"-->
-<!--        android:visibility="gone"-->
-<!--        android:layout_margin="2dp">-->
-
-<!--        <androidx.appcompat.widget.AppCompatImageView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:alpha="0.05"-->
-<!--            android:src="@android:color/black" />-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:gravity="center"-->
-<!--            android:orientation="vertical">-->
-
-
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:text="Camera"-->
-<!--                android:textColor="@android:color/black"-->
-<!--                android:textSize="12sp" />-->
-<!--        </LinearLayout>-->
-<!--    </FrameLayout>-->
-
 
 </LinearLayout>
 </layout>

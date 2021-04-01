@@ -3,9 +3,11 @@ package com.example.onlineacadezykotlin
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import java.lang.Exception
 
 class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     lateinit var mScaleDetector: ScaleGestureDetector
@@ -72,10 +74,11 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         canvas = Canvas(bitmap)
     }
 
-    fun putImage(imageDataModelList:List<ImageDataModel>,image:Bitmap)
+    fun putImage(image:Bitmap)
     {
         val uploadedImageDetails:UploadedImageDetails= UploadedImageDetails();
         val resizedBitmap:Bitmap=getResizedBitmap(image,width.toFloat(),StaticClass.matchParentHeight.toFloat())
+  //      val resizedBitmap:Bitmap=getResizedBitmap(image,729.0F,729.0F)
         uploadedImageDetails.setBitmap(resizedBitmap)
         bitmapList.add(uploadedImageDetails)
         if(bitmapList.size>1)
@@ -84,15 +87,22 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
             invalidate()
     }
 
+    fun callAfterZoomingImage(position:Int,bitmap:Bitmap?)
+    {
+        val resizedBitmap:Bitmap=getResizedBitmap(bitmap!!,width.toFloat(),StaticClass.matchParentHeight.toFloat())
+        bitmapList.get(position).bitmap=resizedBitmap
+        invalidate()
+    }
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         for(i in 0 .. (bitmapList.size-1))
         {
             canvas?.scale(mScaleFactor,mScaleFactor)
-            canvas?.drawBitmap(bitmapList.get(i).getBitmap(),(width-bitmapList.get(i).bitmap.width)/2.toFloat(),bitmapList.get(i).heightFromTop.toFloat(),null)
+            canvas?.drawBitmap(bitmapList.get(i).getBitmap(),(width-bitmapList.get(i).bitmap.width)/2.toFloat(),bitmapList.get(i).heightFromTop.toFloat(),canvasPaint)
         }
         canvas?.drawPath(penPath,penPaint)
-        canvas?.drawBitmap(bitmap,0F,0F,canvasPaint)
+       canvas?.drawBitmap(bitmap,0F,0F,canvasPaint)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -113,8 +123,14 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
             MotionEvent.ACTION_MOVE -> {
                 val pointerIndex = event.findPointerIndex(mActivePointerId)
-                val x: Float = event.getX(pointerIndex)
-                val y: Float = event.getY(pointerIndex)
+                try {
+                    val x: Float = event.getX(pointerIndex)
+                    val y: Float = event.getY(pointerIndex)
+                }
+                catch (e:Exception)
+                {
+
+                }
 
                 if (!mScaleDetector.isInProgress) {
                     if (longPressed == 1) {
@@ -148,7 +164,7 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            mScaleFactor = detector?.scaleFactor!!
+            mScaleFactor *= detector?.scaleFactor!!
             mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 10.0f))
             return true
         }
@@ -156,11 +172,16 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     fun getResizedBitmap(bitmap : Bitmap , reqWidth :Float,reqHeight :Float) : Bitmap
     {
-        var matrix=Matrix();
-        var src:RectF=RectF(0F, 0F, bitmap.width.toFloat(),bitmap.height.toFloat())
-        var req:RectF=RectF(0F, 0F,reqWidth,reqHeight)
+        val matrix=Matrix()
+        val src:RectF=RectF(0F, 0F, bitmap.width.toFloat(),bitmap.height.toFloat())
+        val req:RectF=RectF(0F, 0F,reqWidth,reqHeight)
         matrix.setRectToRect(src,req,Matrix.ScaleToFit.CENTER)
         return Bitmap.createBitmap(bitmap,0,0,bitmap.width,bitmap.height,matrix,true)
+    }
+
+    fun returnBitmap() :Bitmap
+    {
+        return bitmapList.get(0).getBitmap()
     }
 
 }

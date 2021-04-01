@@ -85,6 +85,7 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
         binding.tvNewWhiteBoard.setOnClickListener(this)
         binding.tvPrev.setOnClickListener(this)
         binding.tvNext.setOnClickListener(this)
+        binding.tvZoom.setOnClickListener(this)
 
         navController = Navigation.findNavController(view)
 
@@ -110,17 +111,20 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
         liveData.observe(viewLifecycleOwner, object : Observer<String?> {
             override fun onChanged(s: String?) {
                 // Do something with the result.
-                if (s != null) {
-                    galleryImageList.clear()
-                    galleryImageList.addAll(StaticClass.selectedListOfImages)
-                    Log.d("dsdshfsud","code run")
+                    if (s != null && s.equals("selected")) {
+                        galleryImageList.clear()
+                        galleryImageList.addAll(StaticClass.selectedListOfImages)
+                        Log.d("sdcafcgyfca","normal live data")
+                        StaticClass.selectedListOfImages.clear()
+                        galleryImageList.forEach {
+                            getLocalBitmapUri(it)
+                        }
+                    }
+                else if(s != null && s.equals("zoomed_image"))
+                    {
+                        linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
+                        observeZoomedImageResult()
                 }
-                StaticClass.selectedListOfImages.clear()
-                galleryImageList.forEach {
-                    getLocalBitmapUri(it)
-                }
-
-              // loadImageOncanvas()
             }
         })
 
@@ -229,9 +233,18 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
                     ColorStateList.valueOf(resources.getColor(R.color.light_grey))
                 binding.rlWhiteboard?.removeAllViews()
                 binding.rlWhiteboard?.addView(recyclerViewList.get(currentCanvas))
-
                 setPrevAndNextVisibilty()
 
+            }
+
+            R.id.tv_zoom -> {
+                val image_list=ArrayList<String>()
+                canvasViewList.get(currentCanvas).getImageDataModelList().forEach {
+                    image_list.add(it.image_uri)
+                }
+                val  bundle= Bundle()
+                bundle.putStringArrayList("image_list",image_list)
+                navController.navigate(R.id.action_whiteBoardFragment_to_zoomImageListFragment,bundle)
             }
         }
     }
@@ -244,9 +257,9 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
             "com.example.onlineacadezy.fileprovider",
             reSizedImageFile
         )
-
+        Log.d("sxanscascf", mUri.toString())
         try {
-            bmp = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), mUri);
+            bmp = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), mUri)
             val file = File(
                 requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 "share_image_" + System.currentTimeMillis() + ".jpeg"
@@ -254,36 +267,89 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
             val out = FileOutputStream(file)
             bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
             out.close()
+
         } catch (e: Exception) {
         }
         val imageDataModel = ImageDataModel()
         imageDataModel.bitmap = bmp
+        imageDataModel.image_uri=mUri.toString()
         canvasViewList.get(currentCanvas).getImageDataModelList().add(imageDataModel)
-
-//    }
-//    fun loadImageOncanvas()
-//    {
         if (canvasViewList.get(currentCanvas).getImageDataModelList().size > 1) {
             noOfCount = 1 + noOfCount;
             setHeight(galleryImageList.size*bmp.getHeight());
         } else {
             StaticClass.matchParentHeight = paintView.getHeight()
         }
-        StaticClass.draw = false;
+        StaticClass.draw = false
         linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
         if (canvasViewList.get(currentCanvas).paintView != null)
             canvasViewList.get(currentCanvas).paintView.putImage(
-                canvasViewList.get(currentCanvas).getImageDataModelList(), bmp
+                bmp
             )
     }
+
 
     fun setHeight(height: Int) {
         val layoutParams: ViewGroup.LayoutParams =
             canvasViewList.get(currentCanvas).getPaintView().getLayoutParams()
         layoutParams.height = canvasViewList.get(currentCanvas).getPaintView()
             .getHeight() + galleryImageList.size*StaticClass.matchParentHeight
-        Log.d("dsfcsgfadf","number of times")
         canvasViewList.get(currentCanvas).getPaintView().setLayoutParams(layoutParams)
+    }
+
+    fun observeZoomedImageResult() {
+        Log.d("sdcafcgyfca","zoomed_image live data")
+        var bmp_zoomed : Bitmap?= null
+        try {
+            bmp_zoomed = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(),  StaticClass.zoomedImage)
+            val file = File(
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "share_image_" + System.currentTimeMillis() + ".jpeg"
+            )
+            val out = FileOutputStream(file)
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close()
+
+        } catch (e: Exception) {
+        }
+
+        canvasViewList.get(currentCanvas).paintView.callAfterZoomingImage(StaticClass.zoomed_position,bmp_zoomed)
+
+
+
+
+
+
+
+
+
+
+//        val liveData: MutableLiveData<String> = navController.currentBackStackEntry?.getSavedStateHandle()
+//                ?.getLiveData<String>("zoomed_image") as MutableLiveData<String>
+//        liveData.observe(viewLifecycleOwner, object : Observer<String?> {
+//            override fun onChanged(s: String?) {
+//                // Do something with the result.
+//
+//                if (s != null && s.equals("zoomed_image")) {
+//                    Log.d("sdcafcgyfca","zoomed_image live data")
+//                    var bmp_zoomed : Bitmap?= null
+//                    try {
+//                        bmp_zoomed = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(),  StaticClass.zoomedImage)
+//                        val file = File(
+//                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+//                            "share_image_" + System.currentTimeMillis() + ".jpeg"
+//                        )
+//                        val out = FileOutputStream(file)
+//                        bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+//                        out.close()
+//
+//                    } catch (e: Exception) {
+//                    }
+//
+//                    canvasViewList.get(currentCanvas).paintView.callAfterZoomingImage(StaticClass.zoomed_position,bmp_zoomed)
+//                }
+//            }
+//        })
     }
 
     lateinit var paintView: PaintView;
@@ -309,6 +375,11 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
     override fun onDestroyView() {
         super.onDestroyView()
         fragmentWhiteBoardBinding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        StaticClass.draw = false
     }
 
 }

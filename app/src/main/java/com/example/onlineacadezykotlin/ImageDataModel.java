@@ -6,6 +6,7 @@ public class ImageDataModel {
     private Bitmap bitmap;
     private float amountX;
     private float amountY;
+    private String image_uri;
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -29,5 +30,13 @@ public class ImageDataModel {
 
     public void setAmountY(float amountY) {
         this.amountY = amountY;
+    }
+
+    public String getImage_uri() {
+        return image_uri;
+    }
+
+    public void setImage_uri(String image_uri) {
+        this.image_uri = image_uri;
     }
 }
