@@ -19,7 +19,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class ChooseImageToZoom : Fragment() {
+class ChooseImageToZoom : Fragment() , DisablingPencilInterface{
   lateinit var imageUri:String
     lateinit var navController: NavController
     lateinit var mLongPressed: Runnable
@@ -61,10 +61,13 @@ class ChooseImageToZoom : Fragment() {
         rl_pencil.setOnClickListener {
             if (StaticClass.draw) {
                 StaticClass.draw = false
+                StaticClass.booleanabc=true
                 rl_pencil.backgroundTintList =
                     ColorStateList.valueOf(resources.getColor(R.color.light_grey))
             } else {
                 StaticClass.draw = true
+                StaticClass.booleanabc=true
+                StaticClass.booleanabc=false
                 rl_pencil.backgroundTintList =
                     ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
             }
@@ -93,7 +96,7 @@ class ChooseImageToZoom : Fragment() {
         } catch (e: Exception) {
 
         }
-        selected_image_paintview.putImage(bmp)
+        selected_image_paintview.putImage(bmp,this,1)
     }
 
     fun getImageUri(bmp: Bitmap): Uri? {
@@ -123,5 +126,12 @@ class ChooseImageToZoom : Fragment() {
         super.onStop()
         if(handler !=null)
         handler!!.removeCallbacks(mLongPressed)
+    }
+
+    override fun disablePencil() {
+        StaticClass.draw = false
+        StaticClass.booleanabc=true
+        rl_pencil.backgroundTintList =
+            ColorStateList.valueOf(resources.getColor(R.color.light_grey))
     }
 }

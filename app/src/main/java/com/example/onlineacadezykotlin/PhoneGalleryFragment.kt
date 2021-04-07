@@ -90,7 +90,7 @@ class PhoneGalleryFragment : Fragment(), PhoneGalleryAdapter.ShowGalleryNextButt
                 1 -> {
                     for (i in 0 .. (listOfAllImages.size/3)-1)
                     {
-                    listOfRelatedFolderImages.add(listOfAllImages.get(i))
+                        listOfRelatedFolderImages.add(listOfAllImages.get(i))
                     }
                 }
                 2 -> {

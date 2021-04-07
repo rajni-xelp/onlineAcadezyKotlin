@@ -7,6 +7,7 @@ class StaticClass {
     companion object
     {
       var draw:Boolean=false
+       var booleanabc:Boolean=false
         var matchParentHeight:Int=0
         var selectedListOfImages=ArrayList<String>()
         lateinit var zoomedImage:Uri

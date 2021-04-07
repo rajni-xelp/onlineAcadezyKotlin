@@ -26,7 +26,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class WhiteBoardFragment : Fragment(), View.OnClickListener,
-    PaintViewAdapter.CommunicateWithActivityInterface {
+    PaintViewAdapter.CommunicateWithActivityInterface ,DisablingPencilInterface {
 
     lateinit var recyclerViewList: ArrayList<RecyclerView>
     lateinit var linearLayoutManagerList: ArrayList<CustomLayoutmanager>
@@ -257,7 +257,6 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
             "com.example.onlineacadezy.fileprovider",
             reSizedImageFile
         )
-        Log.d("sxanscascf", mUri.toString())
         try {
             bmp = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), mUri)
             val file = File(
@@ -284,8 +283,9 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
         linearLayoutManagerList.get(currentCanvas).isScrollEnabled = true
         if (canvasViewList.get(currentCanvas).paintView != null)
             canvasViewList.get(currentCanvas).paintView.putImage(
-                bmp
+                bmp,this,0
             )
+
     }
 
 
@@ -380,6 +380,9 @@ class WhiteBoardFragment : Fragment(), View.OnClickListener,
     override fun onPause() {
         super.onPause()
         StaticClass.draw = false
+    }
+
+    override fun disablePencil() {
     }
 
 }

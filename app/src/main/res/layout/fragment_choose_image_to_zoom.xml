@@ -6,6 +6,13 @@
     android:id="@+id/rl_container_new"
     android:layout_height="match_parent"
     tools:context=".ChooseImageToZoom">
+<!--    <com.example.onlineacadezykotlin.PaintView-->
+<!--        android:id="@+id/pv_zoomed"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_above="@+id/bt_fetchbitmap"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        />-->
     <com.example.onlineacadezykotlin.PaintView
         android:id="@+id/pv_zoomed"
         android:layout_width="match_parent"

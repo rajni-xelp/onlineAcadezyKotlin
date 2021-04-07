@@ -26,7 +26,6 @@
                 android:text="Next"
                 android:visibility="gone"
                 android:paddingBottom="15dp"
-                android:paddingRight="15dp"
                 android:paddingTop="15dp"
                 android:paddingEnd="5dp"
                 android:textColor="@color/cardview_dark_background"

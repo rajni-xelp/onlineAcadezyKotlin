@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import java.lang.Exception
+
 
 class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     lateinit var mScaleDetector: ScaleGestureDetector
@@ -26,9 +26,16 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     var mLastTouchX: Float = 0f
     var mLastTouchY: Float = 0f
     var marginFromTop = 50;
+
+    var mPositionX = 0f;
+    var mPositionY:Float = 0f
+    var refx = 0f;
+    var refy:Float = 0f
+    var disablingPencilInterface:DisablingPencilInterface?=null
     lateinit var bitmapList:ArrayList<UploadedImageDetails>
+    var statusToEanbleDraw:Int=0
     init {
-        setUpPainting();
+        setUpPainting()
         mScaleDetector = ScaleGestureDetector(context, ScaleListener())
     }
 
@@ -55,16 +62,16 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         this.canvasPaint = Paint(Paint.DITHER_FLAG);
     }
 
-    fun paintPoint(x:Float,y:Float)
+    fun paintPoint(x: Float, y: Float)
     {
-        canvas.drawPoint(x,y,otherPaint)
+        canvas.drawPoint(x, y, otherPaint)
         invalidate()
     }
 
     fun clearCanvas()
     {
         penPath.reset()
-        canvas.drawColor(0,PorterDuff.Mode.CLEAR)
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR)
         invalidate()
     }
 
@@ -74,88 +81,97 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         canvas = Canvas(bitmap)
     }
 
-    fun putImage(image:Bitmap)
+    fun putImage(image: Bitmap, disablingPencilInterface:DisablingPencilInterface , status: Int)
     {
+        statusToEanbleDraw=status
+        this.disablingPencilInterface=disablingPencilInterface
         val uploadedImageDetails:UploadedImageDetails= UploadedImageDetails();
-        val resizedBitmap:Bitmap=getResizedBitmap(image,width.toFloat(),StaticClass.matchParentHeight.toFloat())
-  //      val resizedBitmap:Bitmap=getResizedBitmap(image,729.0F,729.0F)
+        val resizedBitmap:Bitmap=getResizedBitmap(
+            image,
+            width.toFloat(),
+            StaticClass.matchParentHeight.toFloat()
+        )
         uploadedImageDetails.setBitmap(resizedBitmap)
         bitmapList.add(uploadedImageDetails)
         if(bitmapList.size>1)
-            marginFromTop=marginFromTop + bitmapList.get(bitmapList.size-2).getBitmap().height+50
-           uploadedImageDetails.setHeightFromTop(marginFromTop)
-            invalidate()
+            marginFromTop=marginFromTop + bitmapList.get(bitmapList.size - 2).getBitmap().height+50
+        uploadedImageDetails.setHeightFromTop(marginFromTop)
+        invalidate()
     }
 
-    fun callAfterZoomingImage(position:Int,bitmap:Bitmap?)
+    fun callAfterZoomingImage(position: Int, bitmap: Bitmap?)
     {
-        val resizedBitmap:Bitmap=getResizedBitmap(bitmap!!,width.toFloat(),StaticClass.matchParentHeight.toFloat())
+        val resizedBitmap:Bitmap=getResizedBitmap(
+            bitmap!!,
+            width.toFloat(),
+            StaticClass.matchParentHeight.toFloat()
+        )
         bitmapList.get(position).bitmap=resizedBitmap
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        for(i in 0 .. (bitmapList.size-1))
-        {
-            canvas?.scale(mScaleFactor,mScaleFactor)
-            canvas?.drawBitmap(bitmapList.get(i).getBitmap(),(width-bitmapList.get(i).bitmap.width)/2.toFloat(),bitmapList.get(i).heightFromTop.toFloat(),canvasPaint)
+        if(statusToEanbleDraw==0) {
+            for (i in 0..(bitmapList.size - 1)) {
+                canvas?.scale(mScaleFactor, mScaleFactor)
+                canvas?.drawBitmap(
+                    bitmapList.get(i).getBitmap(),
+                    (width - bitmapList.get(i).bitmap.width) / 2.toFloat(),
+                    bitmapList.get(i).heightFromTop.toFloat(),
+                    canvasPaint
+                )
+            }
+            canvas?.drawPath(penPath, penPaint)
+            canvas?.drawBitmap(bitmap, 0F, 0F, canvasPaint)
         }
-        canvas?.drawPath(penPath,penPaint)
-       canvas?.drawBitmap(bitmap,0F,0F,canvasPaint)
+        else {
+
+            canvas?.translate(mPositionX, mPositionY)
+            canvas?.scale(mScaleFactor, mScaleFactor)
+            if (bitmapList.size > 0)
+                canvas?.drawBitmap(
+                    bitmapList.get(0).getBitmap(),
+                    (width - bitmapList.get(0).bitmap.width) / 2.toFloat(),
+                    bitmapList.get(
+                        0
+                    ).heightFromTop.toFloat(),
+                    canvasPaint
+                )
+            canvas?.drawPath(penPath, penPaint)
+            canvas?.drawBitmap(bitmap, 0F, 0F, canvasPaint)
+        }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector.onTouchEvent(event)
-        val action: Int = event!!.action
-        val touchPoint = PointF();
-        touchPoint.set(event.x, event.y)
-        when (action) {
+        val touchPoint = PointF()
+        touchPoint[event.x] = event.y
+        when (event.action  and event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                val x: Float = event.x
-                val y: Float = event.y
-
-                mLastTouchX = x
-                mLastTouchY = y
-                mActivePointerId = event.getPointerId(0)
+                refx = event.x
+                refy = event.y
                 penPath.moveTo(touchPoint.x, touchPoint.y)
+
             }
-
-            MotionEvent.ACTION_MOVE -> {
-                val pointerIndex = event.findPointerIndex(mActivePointerId)
-                try {
-                    val x: Float = event.getX(pointerIndex)
-                    val y: Float = event.getY(pointerIndex)
-                }
-                catch (e:Exception)
-                {
-
-                }
-
-                if (!mScaleDetector.isInProgress) {
-                    if (longPressed == 1) {
-                        val dxnew: Float = x - mLastTouchX
-                        val dynew: Float = y - mLastTouchY
-
-                        // imageDataModelList.get(0).setAmountX(imageDataModelList.get(0).getAmountX()+dxnew);
-                        //  imageDataModelList.get(0).setAmountY(imageDataModelList.get(0).getAmountY()+dynew);
-                        invalidate()
-
-                    } else {
-                    if(StaticClass.draw)
-                        penPath.lineTo(touchPoint.x, touchPoint.y)
-                    }
-                }
-                mLastTouchX = x
-                mLastTouchY = y
+            MotionEvent.ACTION_POINTER_DOWN ->
+            {
+                StaticClass.draw=false
+                disablingPencilInterface?.disablePencil()
             }
-            MotionEvent.ACTION_UP -> {
-                mActivePointerId = -1
-                canvas.drawPath(penPath, penPaint)
-            }
-
-            MotionEvent.ACTION_CANCEL -> {
-                mActivePointerId = -1
+            MotionEvent.ACTION_MOVE ->
+            {
+                if (!StaticClass.draw) {
+                    val nX = event.x
+                    val nY = event.y
+                    mPositionX += nX - refx
+                    mPositionY += nY - refy
+                    refx = nX
+                    refy = nY
+                    invalidate()
+                } else {
+                    penPath.lineTo(touchPoint.x, touchPoint.y)
+                }
             }
         }
         invalidate()
@@ -170,13 +186,13 @@ class PaintView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
     }
 
-    fun getResizedBitmap(bitmap : Bitmap , reqWidth :Float,reqHeight :Float) : Bitmap
+    fun getResizedBitmap(bitmap: Bitmap, reqWidth: Float, reqHeight: Float) : Bitmap
     {
         val matrix=Matrix()
-        val src:RectF=RectF(0F, 0F, bitmap.width.toFloat(),bitmap.height.toFloat())
-        val req:RectF=RectF(0F, 0F,reqWidth,reqHeight)
-        matrix.setRectToRect(src,req,Matrix.ScaleToFit.CENTER)
-        return Bitmap.createBitmap(bitmap,0,0,bitmap.width,bitmap.height,matrix,true)
+        val src:RectF=RectF(0F, 0F, bitmap.width.toFloat(), bitmap.height.toFloat())
+        val req:RectF=RectF(0F, 0F, reqWidth, reqHeight)
+        matrix.setRectToRect(src, req, Matrix.ScaleToFit.CENTER)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     fun returnBitmap() :Bitmap

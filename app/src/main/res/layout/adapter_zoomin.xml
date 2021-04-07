@@ -11,6 +11,7 @@
         android:layout_gravity="center"
         android:scaleType="centerCrop"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         />
 
 </RelativeLayout>
